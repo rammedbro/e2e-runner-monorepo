@@ -1,0 +1,89 @@
+{
+  "plugins": [
+    "@bx-fe/ts",
+    "@bx-fe/svelte"
+  ],
+  "extends": [
+    "plugin:@bx-fe/ts/base",
+    "plugin:@bx-fe/ts/type-check",
+    "plugin:@bx-fe/svelte/typescript"
+  ],
+  "parserOptions": {
+    "project": [
+      "./tsconfig.json",
+      "./packages/*/tsconfig.json"
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [
+          [
+            "~",
+            "./"
+          ]
+        ]
+      },
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "packages/*/tsconfig.json"
+      }
+    }
+  },
+  "rules": {
+    /** Eslint **/
+    "no-nested-ternary": "off",
+    "no-shadow": "off",
+    "multiline-ternary": "off",
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1,
+        "flatTernaryExpressions": true
+      }
+    ],
+    /** Import **/
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "packageDir": [
+          "./",
+          "./packages/app",
+          "./packages/cli",
+          "./packages/compare"
+        ]
+      }
+    ],
+    /** Security **/
+    "security/detect-non-literal-regexp": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/prefer-regexp-exec": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/no-shadow": "off",
+        "@typescript-eslint/no-inferrable-types": "off"
+      }
+    },
+    {
+      "files": [
+        "*.test.ts",
+        "**/__mocks__/**"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/require-await": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-unsafe-return": "off"
+      }
+    }
+  ]
+}

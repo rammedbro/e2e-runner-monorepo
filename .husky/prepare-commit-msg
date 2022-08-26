@@ -1,0 +1,25 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# A hook script to prepare the commit log message.
+# If the branch name it's a jira Ticket.
+# It adds the branch name to the commit message, if it is not already part of it.
+
+branchPath=$(git symbolic-ref -q HEAD) # Something like refs/heads/dev/BXFE-1748
+branchName="${branchPath##*/}"   # Get text behind the last / of the branch path
+
+if [[ "$branchName" =~ ([a-zA-Z]*-[0-9]*)$ ]]
+then
+    # Get the captured portion of the branch name and put it into braces.
+    jiraTicketName="\[${BASH_REMATCH[1]}\]"
+    originalMessage="cat $1"
+
+    # If the message already begins with [PROJECT_NAME-#], do not edit the commit message.
+    if [[ $originalMessage == $jiraTicketName* ]]
+        then
+        exit
+    fi
+
+    # Insert branch name at the start of the commit message file
+    sed -i '.bak' "1s/^/$jiraTicketName: /" $1
+fi

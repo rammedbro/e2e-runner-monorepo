@@ -1,0 +1,18 @@
+:root {
+  // Theme
+  --mdc-theme-primary: #005bff;
+  --mdc-segmented-button-selected-ink-color: #fff;
+  --mdc-segmented-button-selected-container-fill-color: rgba(0, 91, 255, .8);
+  --mdc-segmented-button-container-fill-color: rgba(0, 91, 255, .05);
+  --mdc-segmented-button-unselected-ink-color: #000;
+  --mdc-ripple-color: #005bff;
+  --mdc-theme-secondary: #676778;
+  --mdc-theme-background: #fff;
+  --mdc-theme-success: #10ad44;
+  --mdc-theme-warning: #ffcc00;
+  --mdc-theme-error: #f91155;
+
+  // Button
+  --mdc-typography-button-font-family: 'GTEestiPro', sans-serif;
+  --mdc-typography-button-font-weight: 400;
+}

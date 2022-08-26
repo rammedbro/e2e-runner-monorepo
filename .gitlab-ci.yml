@@ -1,0 +1,114 @@
+# We need to use image with git and without any .npmrc/.yarnrc installed globally
+image: gitlab-registry.ozon.ru/docker/nodejs/base:14
+
+stages:
+  - .pre
+  - build
+  - review
+  - tests
+  - publish
+  - .post
+
+cache: &global-cache
+  key:
+    files:
+      - yarn.lock
+      - packages/**/yarn.lock
+  paths:
+    - node_modules
+    - packages/**/node_modules
+  policy: pull
+
+install-dependencies:
+  stage: .pre
+  cache:
+    <<: *global-cache
+    policy: pull-push
+  script:
+    - yarn ci:ignore-scripts
+    - yarn lerna:bootstrap
+
+build:
+  stage: build
+  needs:
+    - install-dependencies
+  artifacts:
+    paths:
+      - packages/**/dist
+  script:
+    - yarn build
+
+review:lint:
+  stage: review
+  needs:
+    - build
+  script:
+    - yarn lint
+  except:
+    - master
+
+review:types:
+  stage: review
+  needs:
+    - build
+  script:
+    - yarn types
+  except:
+    - master
+
+review:version:
+  stage: review
+  needs:
+    - install-dependencies
+  script:
+    - yarn version:check
+  except:
+    - master
+
+test:
+  stage: tests
+  needs:
+    - install-dependencies
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - dist/unit/report/junit.xml
+  script:
+    - yarn test:coverage
+  except:
+    - tags
+
+publish:
+  stage: publish
+  when: on_success
+  dependencies:
+    - install-dependencies
+    - build
+  script:
+    - yarn lerna:publish
+  only:
+    - master
+
+publish-rc:
+  stage: publish
+  when: manual
+  needs:
+    - build
+  script:
+    - node scripts/publish-rc.js
+  only:
+    - /^dev\/.+$/
+
+unpublish-rc:
+  stage: .post
+  needs:
+    - install-dependencies
+  before_script:
+    - echo "registry=https://nexus.s.o3.ru/repository/npm-private//" > .npmrc
+    - echo "//nexus.s.o3.ru/repository/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
+    - echo "//nexus.s.o3.ru/repository/npm-private/:_authToken=${NPM_AUTH_TOKEN}" >> .npmrc
+  script:
+    - node scripts/unpublish-rc.js
+  only:
+    - master

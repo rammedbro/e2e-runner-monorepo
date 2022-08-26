@@ -1,0 +1,13 @@
+{
+  "version": "independent",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "command": {
+    "publish": {
+      "registry": "https://nexus.s.o3.ru/repository/npm-private/"
+    }
+  },
+  "packages": [
+    "packages/*"
+  ]
+}
